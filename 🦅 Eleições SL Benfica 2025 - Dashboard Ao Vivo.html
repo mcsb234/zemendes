@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<!-- saved from url=(0177)https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/0831e9da0520d6dbf774f8ce7fa66387/c5de655a-0b46-49db-b2b2-3d97dbda16bc/0eb54730.html?utm_source=perplexity -->
+<html lang="pt-PT"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard ao vivo das Eleições Presidenciais do SL Benfica 2025 - Resultados em tempo real com mapa interativo">
+    <meta name="keywords" content="Benfica, Eleições, 2025, Rui Costa, Noronha Lopes, Resultados">
+    <title>🦅 Eleições SL Benfica 2025 - Dashboard Ao Vivo</title>
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;%F0%9F%A6%85&lt;/text&gt;&lt;/svg&gt;">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --benfica-red: #E30613;
+            --benfica-dark: #1a1a1a;
+            --benfica-medium: #2d2d2d;
+            --text-white: #ffffff;
+            --text-gray: #aaaaaa;
+            --text-light: #cccccc;
+            --gold: #ffd700;
+            --green: #4CAF50;
+            --blue: #2196F3;
+            --yellow: #FFC107;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--benfica-dark) 0%, var(--benfica-medium) 100%);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ANIMAÇÃO DE FUNDO */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--benfica-red);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .circle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
+        .circle:nth-child(2) { width: 120px; height: 120px; top: 60%; left: 80%; animation-delay: 5s; }
+        .circle:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 20%; animation-delay: 10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-30px) translateX(30px); }
+            50% { transform: translateY(-60px) translateX(-30px); }
+            75% { transform: translateY(-30px) translateX(-60px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, rgba(227, 6, 19, 0.15) 0%, rgba(227, 6, 19, 0.05) 100%);
+            border: 2px solid var(--benfica-red);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(227, 6, 19, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(227, 6, 19, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: clamp(1.5em, 5vw, 2.8em);
+            font-weight: 900;
+            color: var(--benfica-red);
+            text-shadow: 0 0 30px rgba(227, 6, 19, 0.6);
+            letter-spacing: -1px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(227, 6, 19, 0.5); }
+            to { text-shadow: 0 0 40px rgba(227, 6, 19, 0.8); }
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            background: rgba(227, 6, 19, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--benfica-red);
+        }
+
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--benfica-red);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 15px var(--benfica-red);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.95); }
+        }
+
+        /* TIME GRID */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .time-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--benfica-red);
+            transition: all 0.3s ease;
+        }
+
+        .time-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(227, 6, 19, 0.3);
+        }
+
+        .time-label {
+            font-size: 0.85em;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+        }
+
+        .time-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--benfica-red);
+            font-family: 'Courier New', monospace;
+        }
+
+        .countdown-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--gold);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* STATUS BANNER */
+        .status-banner {
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.4s ease;
+            animation: slideIn 0.5s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .status-banner.no-data {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(33, 150, 243, 0.05) 100%);
+            border: 2px solid var(--blue);
+        }
+
+        .status-banner.checking {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.05) 100%);
+            border: 2px solid var(--yellow);
+        }
+
+        .status-icon {
+            font-size: 2.5em;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .status-icon.spin {
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-content {
+            flex: 1;
+        }
+
+        .status-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .status-message {
+            font-size: 0.95em;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* BUTTONS */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--benfica-red) 0%, #a00408 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #c0050a 0%, #800306 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(227, 6, 19, 0.4);
+        }
+
+        .btn-primary.loading .btn-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.9em;
+            font-weight: 900;
+            color: var(--benfica-red);
+            text-shadow: 0 2px 10px rgba(227, 6, 19, 0.3);
+        }
+
+        .info-banner {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--benfica-red);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+
+        /* CANDIDATES GRID */
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .candidate-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 2px solid rgba(227, 6, 19, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-card:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+            border-color: var(--benfica-red);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(227, 6, 19, 0.25);
+        }
+
+        .candidate-card.leader {
+            background: linear-gradient(135deg, rgba(227, 6, 19, 0.2) 0%, rgba(227, 6, 19, 0.05) 100%);
+            border-color: var(--benfica-red);
+            border-width: 3px;
+            box-shadow: 0 10px 35px rgba(227, 6, 19, 0.4);
+            animation: leaderPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes leaderPulse {
+            0%, 100% { box-shadow: 0 10px 35px rgba(227, 6, 19, 0.4); }
+            50% { box-shadow: 0 15px 45px rgba(227, 6, 19, 0.6); }
+        }
+
+        .candidate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 18px;
+        }
+
+        .candidate-name {
+            font-size: 1.35em;
+            font-weight: bold;
+            color: var(--text-white);
+            margin-bottom: 6px;
+        }
+
+        .list-badge {
+            background: var(--benfica-red);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: 0 4px 15px rgba(227, 6, 19, 0.4);
+        }
+
+        .leader-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold) 0%, #f4b400 100%);
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+            animation: badgeBounce 1s ease-in-out infinite;
+        }
+
+        @keyframes badgeBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .percentage-display {
+            font-size: 3em;
+            font-weight: 900;
+            color: var(--benfica-red);
+            margin: 20px 0;
+            line-height: 1;
+            text-shadow: 0 2px 10px rgba(227, 6, 19, 0.3);
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--benfica-red) 0%, #ff4444 100%);
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            margin-top: 12px;
+        }
+
+        .trend-up { color: var(--green); }
+        .trend-down { color: #f44336; }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            border-color: var(--benfica-red);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: var(--benfica-red);
+        }
+
+        /* MAPA PORTUGAL */
+        .map-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .map-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-visual {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+        }
+
+        .portugal-map {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 5px 20px rgba(227, 6, 19, 0.3));
+        }
+
+        .map-legend {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(5px);
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* GRÁFICO PREVISÃO */
+        .chart-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* SOURCES */
+        .sources-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .source-link {
+            color: var(--benfica-red);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .source-link:hover {
+            color: #ff4444;
+            text-decoration: underline;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header-title { font-size: 1.5em; }
+            .candidates-grid { grid-template-columns: 1fr; }
+        }
+
+        /* FADE IN */
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- ANIMATED BACKGROUND -->
+    <div class="animated-background">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header fade-in">
+            <div class="header-content">
+                <div class="header-top">
+                    <h1 class="header-title">🦅 ELEIÇÕES SL BENFICA 2025</h1>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>AO VIVO</span>
+                    </div>
+                </div>
+
+                <div class="time-grid">
+                    <div class="time-card">
+                        <div class="time-label">⏰ Hora Atual</div>
+                        <div class="time-value" id="currentTime">03:31:35</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">📊 Última Atualização</div>
+                        <div class="time-value" id="lastUpdate">01:00</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">✅ Última Verificação</div>
+                        <div class="time-value" id="lastCheck">03:31:29</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">⏳ Próxima Verificação</div>
+                        <div class="countdown-value" id="countdown">9:53</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS BANNER -->
+        <div class="status-banner no-data fade-in" id="statusBanner">
+            <div class="status-icon" id="statusIcon">ℹ️</div>
+            <div class="status-content">
+                <div class="status-title" id="statusTitle">Sem Novos Dados</div>
+                <div class="status-message" id="statusMessage">
+                    Última atualização oficial: 01:00 - Aguardando próxima publicação
+                </div>
+            </div>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="action-buttons fade-in">
+            <button class="btn btn-primary" id="refreshBtn" onclick="dashboard.manualRefresh()">
+                <span class="btn-icon">🔄</span>
+                <span>Verificar Agora</span>
+            </button>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <div class="section-title">📊 Resultados Oficiais Parciais</div>
+            </div>
+            <div class="info-banner">
+                <p>🗳️ <strong>1,547 votos contabilizados de 85,422 (1.81%)</strong></p>
+                <p>📍 <strong>14 secções apuradas (A Bola) / 6 (Benfica oficial)</strong></p>
+                <p>🏆 <strong style="color: var(--gold);">Recorde Mundial: 85,422 votantes</strong></p>
+            </div>
+            <div class="candidates-grid" id="candidatesContainer"><div class="candidate-card leader" style="animation-delay: 0s;">
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">João Noronha Lopes</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista F</div>
+                                <div class="leader-badge">🏆 LÍDER</div>
+                            </div>
+                            <div class="list-badge">F</div>
+                        </div>
+                        <div class="percentage-display">47.1%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 47.1%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-up">📈 +8.1%</span>
+                            <span style="color: var(--text-gray);">• LÍDER</span>
+                        </div>
+                    </div><div class="candidate-card " style="animation-delay: 0.1s;">
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">Rui Costa</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista G</div>
+                                
+                            </div>
+                            <div class="list-badge">G</div>
+                        </div>
+                        <div class="percentage-display">31.1%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 31.1%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-down">📉 -8.1%</span>
+                            <span style="color: var(--text-gray);">• Era líder</span>
+                        </div>
+                    </div><div class="candidate-card " style="animation-delay: 0.2s;">
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">João Diogo Manteigas</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista C</div>
+                                
+                            </div>
+                            <div class="list-badge">C</div>
+                        </div>
+                        <div class="percentage-display">10%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 10%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-up">📈 +0.2%</span>
+                            
+                        </div>
+                    </div><div class="candidate-card " style="animation-delay: 0.3s;">
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">Luís Filipe Vieira</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista E</div>
+                                
+                            </div>
+                            <div class="list-badge">E</div>
+                        </div>
+                        <div class="percentage-display">8.6%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 8.6%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-down">📉 -0.7%</span>
+                            
+                        </div>
+                    </div><div class="candidate-card " style="animation-delay: 0.4s;">
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">Martim Mayer</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista B</div>
+                                
+                            </div>
+                            <div class="list-badge">B</div>
+                        </div>
+                        <div class="percentage-display">2.8%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 2.8%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-up">📈 +0.8%</span>
+                            
+                        </div>
+                    </div><div class="candidate-card " style="animation-delay: 0.5s;">
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">Cristóvão Carvalho</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista D</div>
+                                
+                            </div>
+                            <div class="list-badge">D</div>
+                        </div>
+                        <div class="percentage-display">0.1%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 0.1%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-down">📉 -0.2%</span>
+                            
+                        </div>
+                    </div></div>
+        </div>
+
+        <!-- MAPA PORTUGAL -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <div class="section-title">🗺️ Mapa de Portugal - Resultados por Região</div>
+            </div>
+            <div class="map-section">
+                <div class="map-container">
+                    <div class="map-visual">
+                        <svg class="portugal-map" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Portugal Continental simplificado -->
+                            <path d="M100,50 L120,70 L130,100 L125,150 L115,200 L105,250 L95,240 L85,200 L80,150 L90,100 L95,70 Z" fill="rgba(227, 6, 19, 0.3)" stroke="var(--benfica-red)" stroke-width="2"></path>
+                            <!-- Ilhas -->
+                            <circle cx="40" cy="280" r="8" fill="rgba(227, 6, 19, 0.3)" stroke="var(--benfica-red)" stroke-width="1"></circle>
+                            <text x="40" y="295" text-anchor="middle" fill="white" font-size="8">Açores</text>
+                            <circle cx="70" cy="280" r="6" fill="rgba(227, 6, 19, 0.3)" stroke="var(--benfica-red)" stroke-width="1"></circle>
+                            <text x="70" y="295" text-anchor="middle" fill="white" font-size="8">Madeira</text>
+                            <!-- Estádio -->
+                            <circle cx="100" cy="120" r="5" fill="var(--gold)" stroke="white" stroke-width="1"></circle>
+                            <text x="100" y="110" text-anchor="middle" fill="var(--gold)" font-size="10">⭐</text>
+                        </svg>
+                    </div>
+                    <div class="map-legend">
+                        <h3 style="color: var(--benfica-red); margin-bottom: 15px;">Legenda</h3>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #FF6B6B;"></div>
+                            <div>
+                                <strong>Rui Costa (Lista G)</strong><br>
+                                <small>Toronto, Arganil, Chaves</small>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #45B7D1;"></div>
+                            <div>
+                                <strong>Noronha Lopes (Lista F)</strong><br>
+                                <small>Barcelona, Madrid, Gaia, Londres</small>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--gold);"></div>
+                            <div>
+                                <strong>⭐ Estádio da Luz</strong><br>
+                                <small>Principal local de votação</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICO PREVISÃO -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <div class="section-title">📈 Previsão de Conclusão da Contagem</div>
+            </div>
+            <div class="chart-section">
+                <p style="margin-bottom: 15px;">
+                    <strong>Cadência atual:</strong> 23.97 votos/minuto (1,438 votos/hora)<br>
+                    <strong>Tempo estimado:</strong> Conclusão prevista entre 03:30 - 04:00 (domingo)
+                </p>
+                <div class="chart-container">
+                    <canvas id="predictionChart" class="chart-canvas" width="1308" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATISTICS -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <div class="section-title">📊 Estatísticas Gerais</div>
+            </div>
+            <div class="stats-grid" id="statsContainer"><div class="stat-card" style="animation-delay: 0s;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🏆</div>
+                        <div style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 10px;">Votantes Total</div>
+                        <div class="stat-value">85.422</div>
+                        <div style="font-size: 0.8em; color: var(--text-light); margin-top: 8px;">Recorde Mundial</div>
+                    </div><div class="stat-card" style="animation-delay: 0.1s;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📊</div>
+                        <div style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 10px;">Participação</div>
+                        <div class="stat-value">53.33%</div>
+                        <div style="font-size: 0.8em; color: var(--text-light); margin-top: 8px;">de 160,182 sócios</div>
+                    </div><div class="stat-card" style="animation-delay: 0.2s;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🗳️</div>
+                        <div style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 10px;">Votos Apurados</div>
+                        <div class="stat-value">1.547</div>
+                        <div style="font-size: 0.8em; color: var(--text-light); margin-top: 8px;">(1.81%)</div>
+                    </div><div class="stat-card" style="animation-delay: 0.3s;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📍</div>
+                        <div style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 10px;">Secções</div>
+                        <div class="stat-value">14/108</div>
+                        <div style="font-size: 0.8em; color: var(--text-light); margin-top: 8px;">(A Bola)</div>
+                    </div></div>
+        </div>
+
+        <!-- SOURCES -->
+        <div class="sources-section fade-in">
+            <div style="font-size: 1.2em; font-weight: bold; color: var(--benfica-red); margin-bottom: 15px;">
+                📚 Fontes de Dados Oficiais
+            </div>
+            <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <span style="color: var(--text-gray);">🏛️ Fonte Primária:</span>
+                <a href="https://www.slbenfica.pt/eleicoes/resultados" target="_blank" class="source-link">
+                    SL Benfica Oficial
+                </a>
+            </div>
+            <div style="padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <span style="color: var(--text-gray);">📰 Fonte Secundária:</span>
+                <a href="https://www.abola.pt/liveblog/eleicoes-do-benfica" target="_blank" class="source-link">
+                    A Bola Liveblog
+                </a>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div style="font-size: 2em; margin-bottom: 10px;">🦅</div>
+            <p><strong>Dashboard Não Oficial das Eleições SL Benfica 2025</strong></p>
+            <p style="margin-top: 8px; color: var(--text-gray);">
+                Segunda Volta: 8 de Novembro de 2025 (se necessária)
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const dashboard = {
+            config: {
+                autoRefreshInterval: 600000, // 10 min
+            },
+            state: {
+                autoRefreshTimer: null,
+                lastCheckTime: null,
+                isChecking: false
+            },
+            data: {
+                candidates: [
+                    { name: 'João Noronha Lopes', list: 'F', percentage: 47.1, position: 1, status: 'LÍDER', trend: 'up', change: '+8.1%' },
+                    { name: 'Rui Costa', list: 'G', percentage: 31.1, position: 2, status: 'Era líder', trend: 'down', change: '-8.1%' },
+                    { name: 'João Diogo Manteigas', list: 'C', percentage: 10.0, position: 3, status: '', trend: 'up', change: '+0.2%' },
+                    { name: 'Luís Filipe Vieira', list: 'E', percentage: 8.6, position: 4, status: '', trend: 'down', change: '-0.7%' },
+                    { name: 'Martim Mayer', list: 'B', percentage: 2.8, position: 5, status: '', trend: 'up', change: '+0.8%' },
+                    { name: 'Cristóvão Carvalho', list: 'D', percentage: 0.1, position: 6, status: '', trend: 'down', change: '-0.2%' }
+                ],
+                stats: [
+                    { icon: '🏆', label: 'Votantes Total', value: '85.422', note: 'Recorde Mundial' },
+                    { icon: '📊', label: 'Participação', value: '53.33%', note: 'de 160,182 sócios' },
+                    { icon: '🗳️', label: 'Votos Apurados', value: '1.547', note: '(1.81%)' },
+                    { icon: '📍', label: 'Secções', value: '14/108', note: '(A Bola)' }
+                ]
+            },
+
+            init: function() {
+                console.log('🦅 Dashboard Benfica 2025 - Ultimate Edition v2.0');
+                this.updateCurrentTime();
+                this.renderCandidates();
+                this.renderStats();
+                this.drawPredictionChart();
+                this.startAutoRefresh();
+                this.setLastCheckTime();
+                setInterval(() => this.updateCurrentTime(), 1000);
+                setInterval(() => this.updateCountdown(), 1000);
+            },
+
+            updateCurrentTime: function() {
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString('pt-PT');
+            },
+
+            setLastCheckTime: function() {
+                const now = new Date();
+                this.state.lastCheckTime = now;
+                document.getElementById('lastCheck').textContent = now.toLocaleTimeString('pt-PT');
+            },
+
+            updateCountdown: function() {
+                if (!this.state.lastCheckTime) return;
+                const now = new Date();
+                const nextCheck = new Date(this.state.lastCheckTime.getTime() + this.config.autoRefreshInterval);
+                const diff = nextCheck - now;
+                if (diff <= 0) {
+                    this.autoRefresh();
+                    return;
+                }
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                document.getElementById('countdown').textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+            },
+
+            startAutoRefresh: function() {
+                this.state.autoRefreshTimer = setInterval(() => this.autoRefresh(), this.config.autoRefreshInterval);
+            },
+
+            autoRefresh: function() {
+                if (this.state.isChecking) return;
+                this.checkForUpdates();
+            },
+
+            manualRefresh: function() {
+                if (this.state.isChecking) return;
+                const btn = document.getElementById('refreshBtn');
+                btn.classList.add('loading');
+                this.checkForUpdates(() => btn.classList.remove('loading'));
+            },
+
+            checkForUpdates: function(callback) {
+                this.state.isChecking = true;
+                this.showStatusChecking();
+                setTimeout(() => {
+                    this.showStatusNoNewData();
+                    this.setLastCheckTime();
+                    this.state.isChecking = false;
+                    if (callback) callback();
+                }, 1500);
+            },
+
+            showStatusChecking: function() {
+                const banner = document.getElementById('statusBanner');
+                banner.className = 'status-banner checking';
+                document.getElementById('statusIcon').textContent = '🔄';
+                document.getElementById('statusIcon').classList.add('spin');
+                document.getElementById('statusTitle').textContent = 'Verificando...';
+                document.getElementById('statusMessage').textContent = 'Consultando SL Benfica e A Bola';
+            },
+
+            showStatusNoNewData: function() {
+                const banner = document.getElementById('statusBanner');
+                banner.className = 'status-banner no-data';
+                document.getElementById('statusIcon').textContent = 'ℹ️';
+                document.getElementById('statusIcon').classList.remove('spin');
+                document.getElementById('statusTitle').textContent = 'Sem Novos Dados';
+                document.getElementById('statusMessage').innerHTML = 'Última atualização: <strong>01:00</strong> - Aguardando resultados';
+            },
+
+            renderCandidates: function() {
+                const container = document.getElementById('candidatesContainer');
+                container.innerHTML = '';
+                this.data.candidates.forEach((c, i) => {
+                    const card = document.createElement('div');
+                    card.className = `candidate-card ${c.position === 1 ? 'leader' : ''}`;
+                    card.style.animationDelay = `${i * 0.1}s`;
+                    const badge = c.position === 1 ? '<div class="leader-badge">🏆 LÍDER</div>' : '';
+                    const trendIcon = c.trend === 'up' ? '📈' : '📉';
+                    card.innerHTML = `
+                        <div class="candidate-header">
+                            <div>
+                                <div class="candidate-name">${c.name}</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">Lista ${c.list}</div>
+                                ${badge}
+                            </div>
+                            <div class="list-badge">${c.list}</div>
+                        </div>
+                        <div class="percentage-display">${c.percentage}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${c.percentage}%;"></div>
+                        </div>
+                        <div class="trend-indicator">
+                            <span class="trend-${c.trend}">${trendIcon} ${c.change}</span>
+                            ${c.status ? `<span style="color: var(--text-gray);">• ${c.status}</span>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            },
+
+            renderStats: function() {
+                const container = document.getElementById('statsContainer');
+                container.innerHTML = '';
+                this.data.stats.forEach((s, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.style.animationDelay = `${i * 0.1}s`;
+                    card.innerHTML = `
+                        <div style="font-size: 2em; margin-bottom: 10px;">${s.icon}</div>
+                        <div style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 10px;">${s.label}</div>
+                        <div class="stat-value">${s.value}</div>
+                        <div style="font-size: 0.8em; color: var(--text-light); margin-top: 8px;">${s.note}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            },
+
+            drawPredictionChart: function() {
+                const canvas = document.getElementById('predictionChart');
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+
+                const data = [
+                    {time: '00:30', votes: 828},
+                    {time: '01:00', votes: 1547},
+                    {time: '02:00', votes: 2985, predicted: true},
+                    {time: '03:00', votes: 4423, predicted: true},
+                    {time: '04:00', votes: 5861, predicted: true}
+                ];
+
+                ctx.strokeStyle = 'var(--benfica-red)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                data.forEach((d, i) => {
+                    const x = (i / (data.length - 1)) * (canvas.width - 40) + 20;
+                    const y = canvas.height - 40 - (d.votes / 6000) * (canvas.height - 60);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+
+                ctx.stroke();
+
+                // Labels
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                data.forEach((d, i) => {
+                    const x = (i / (data.length - 1)) * (canvas.width - 40) + 20;
+                    ctx.fillText(d.time, x - 15, canvas.height - 10);
+                    ctx.fillText(d.votes, x - 15, canvas.height - 40 - (d.votes / 6000) * (canvas.height - 60) - 10);
+                });
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => dashboard.init());
+    </script>
+
+<div class="glasp-extension-toaster" style="display: block; width: 320px; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; top: 40px; right: 24px; z-index: 9999;"><template shadowrootmode="open"><div class="glasp-extension" style="font-family: inherit;"></div></template></div></body><div class="glasp-extension" style="display: block; width: unset; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; bottom: 16px; right: 16px; z-index: 9999;"><div class="glasp-extension" style="font-family: inherit;"></div></div></html>
